@@ -1,0 +1,51 @@
+plugins {
+	id 'org.springframework.boot' version '3.0.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'java'
+
+}
+
+
+
+group = 'com.store'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	//implementation 'org.springframework.boot:spring-boot-devtools'
+
+	implementation('org.springdoc:springdoc-openapi-core:1.1.49')
+	implementation('org.springdoc:springdoc-openapi-ui:1.6.15')
+
+	//implementation 'io.springfox:springfox-swagger2:3.0.0'
+	//implementation 'io.springfox:springfox-swagger2:3.0.0'
+	//implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	//implementation 'javax.servlet:javax.servlet-api:4.0.1'
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'com.rabbitmq:amqp-client:5.16.0'
+
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

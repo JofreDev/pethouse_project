@@ -1,0 +1,74 @@
+version: '3.8'
+services:
+
+  rabbitmq-container:
+    image: rabbitmq:3.10-management
+    restart: always
+    container_name: rabbitmq-container
+    hostname: rabbitmq-container
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - 'resolute'
+
+  postgres-container:
+    image: postgres:13
+    restart: always
+    container_name: postgres-container
+    environment:
+      POSTGRES_PASSWORD: jofre
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ejemplo2
+    ports:
+      - '5432:5432'
+    networks:
+      - 'resolute'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./RegistrosBD.sql:/docker-entrypoint-initdb.d/RegistrosBD.sql    
+      
+      
+
+  inventory-management-container:
+    container_name: inventory-management-container
+    build:
+      context: ./inventorymanagement
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-container:5432/ejemplo2
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: jofre
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_RABBITMQ_HOST: rabbitmq-container
+    ports:
+      - '8095:8095'
+    networks:
+      - 'resolute'
+    depends_on:
+      - rabbitmq-container
+      - postgres-container
+  orders-management-container:
+    container_name: orders-management-container
+    build:
+      context: ./ordersmanagement
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq-container
+    ports:
+      - '80:80'
+    networks:
+      - 'resolute'
+    depends_on:
+      - rabbitmq-container
+      - inventory-management-container
+volumes:
+  db_data:
+
+networks:
+  resolute:
+    name: resolute
+
+
